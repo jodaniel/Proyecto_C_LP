@@ -21,41 +21,6 @@ matrixStruct *matStr;
 void vaciar(char temp[]);
 void copiar(char temp[], int i);
 
-void generateMatrix(Cell matrix[][15], const int dim, const int values[]){
-
-    int i;
-    i = 0;
-    int y,z;
-
-    for(y = 1; y<=dim; y++ ) {
-        for (z = 1; z <=dim; z++) {
-            if (values[i] == y && values[i+1] == z) {
-                matrix[y][z].bool = 1;
-                matrix[y][z].row = y;
-                matrix[y][z].col = z;
-
-            }
-            else {
-                matrix[y][z].bool = 0;
-                matrix[y][z].row = y;
-                matrix[y][z].col = z;
-            }
-        }
-        i += 2;
-    }
-
-}
-
-void showSpots(Cell matrix[][15], const int dim){
-
-    int i,j;
-    for(i = 1; i<=dim; i++){
-        for(j=1; j<=dim; j++)
-            printf("Valor[%i][%i] es %i\n", i, j, matrix[i][j].bool);
-    }
-
-}
-
 //vaciar arreglo temporal
 void vaciar(char temp[]) {
 
@@ -142,8 +107,9 @@ void manageFile(char direction[]) {
         int valoresInversos[strlen(temp)-2];
         int valoresCorrectos[strlen(temp)-2];
 
-        int m;
+        int m,size;
         m=0;
+        size=0;
 
         do {
             valoresInversos[m] =  copiaNumeros % 10;
@@ -155,13 +121,41 @@ void manageFile(char direction[]) {
 
         for(e=0, f=(strlen(temp)-2)-1; f>=0; f--, e++){
             valoresCorrectos[e] = valoresInversos[f];
+            size++;
+        }
+
+        int y,z;
+        Cell matriz[(int)strtol(matStr[i].matrixSize, &ptr, 10)+1][15];
+
+        for(y = 1; y<(int)strtol(matStr[i].matrixSize, &ptr, 10)+1; y++ ) {
+
+            for (z = 1; z < (int)strtol(matStr[i].matrixSize, &ptr, 10)+1; z++) {
+                matriz[y][z].bool = 0;
+                matriz[y][z].row = y;
+                matriz[y][z].col = z;
+            }
+        }
+
+        int w =0;
+
+        while(w < size){
+            matriz[valoresCorrectos[w]][valoresCorrectos[w+1]].bool = 1;
+            //printf("x:%i y:%i bool:%i\n", valoresCorrectos[w], valoresCorrectos[w+1], matriz[valoresCorrectos[w]][valoresCorrectos[w+1]].bool);
+            w +=2;
+        }
+
+        int p,q;
+
+        for(q = 1; q<(int)strtol(matStr[i].matrixSize, &ptr, 10)+1; q++){
+            for(p=1; p<(int)strtol(matStr[i].matrixSize, &ptr, 10)+1; p++)
+                printf("Valor[%i][%i] es %i\n", q, p, matriz[q][p].bool);
         }
 
         //retorno en la consola
-        Cell matriz[strtol(matStr[i].matrixSize, &ptr, 10)][15];
 
-        generateMatrix(matriz, (int)strtol(matStr[i].matrixSize, &ptr, 10), valoresCorrectos);
-        showSpots(matriz, (int)strtol(matStr[i].matrixSize, &ptr, 10));
+
+        //generateMatrix(matriz, (int)strtol(matStr[i].matrixSize, &ptr, 10), valoresCorrectos, size);
+        //showSpots(matriz, (int)strtol(matStr[i].matrixSize, &ptr, 10));
 
     }
 
